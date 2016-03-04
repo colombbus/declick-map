@@ -392,7 +392,7 @@ function DeclickMap() {
                 textNumber.onMouseDown = getChapterMouseHandler(chapters.length - 1);
                 everything.addChild(textNumber);
             } else {
-                placed.onMouseDown = getMouseHandler(index);
+                placed.onMouseDown = getStepMouseHandler(index);
             }
             placed.onMouseEnter = mouseEnterHandler;
             placed.onMouseLeave = mouseLeaveHandler;
@@ -423,7 +423,7 @@ function DeclickMap() {
                 }
                 previousLabel = text;
                 currentLabels.addChild(text);
-                text.onMouseDown = getMouseHandler(index);
+                text.onMouseDown = getStepMouseHandler(index);
             } else {
                 text.content = wordwrap(steps[i].name, 12);
                 if (text.intersects(path)) {
@@ -438,35 +438,6 @@ function DeclickMap() {
             text.onMouseEnter = mouseEnterHandler;
             text.onMouseLeave = mouseLeaveHandler;
             return placed;
-        };
-
-        var getMouseHandler = function(i) {
-            return function(event) {
-                setCurrentStep(steps[i].id, false, true);
-                if (stepCallback) {
-                    stepCallback(steps[i].id);
-                }
-                event.preventDefault();
-                clickCaptured = true;
-            };
-        };
-
-        var getChapterMouseHandler = function(i) {
-            return function(event) {
-                openChapter(i, true);
-                event.preventDefault();
-                clickCaptured = true;
-            };
-        };
-
-        var mouseEnterHandler = function(event) {
-            $canvas.css("cursor", "pointer");
-        };
-
-        var mouseLeaveHandler = function(event) {
-            if (!currentChapterPath) {
-                $canvas.css("cursor", "default");
-            }
         };
 
         var stepLength = path.length / (steps.length - 1);
@@ -495,6 +466,36 @@ function DeclickMap() {
         everything.addChild(current);
     };
     
+    // Mouse handlers
+    var getStepMouseHandler = function(i) {
+        return function(event) {
+            setCurrentStep(steps[i].id, false, true);
+            if (stepCallback) {
+                stepCallback(steps[i].id);
+            }
+            event.preventDefault();
+            clickCaptured = true;
+        };
+    };
+
+    var getChapterMouseHandler = function(i) {
+        return function(event) {
+            openChapter(i, true);
+            event.preventDefault();
+            clickCaptured = true;
+        };
+    };
+
+    var mouseEnterHandler = function(event) {
+        $canvas.css("cursor", "pointer");
+    };
+
+    var mouseLeaveHandler = function(event) {
+        if (!currentChapterPath) {
+            $canvas.css("cursor", "default");
+        }
+    };    
+    
     // Update data
     this.updateState = function(udpatedSteps) {
         $.each(udpatedSteps, function(key, value) {
@@ -515,6 +516,9 @@ function DeclickMap() {
                         var placed = symbol.place(point);
                         everything.addChild(placed);
                         displayedSteps[i] = placed;
+                        placed.onMouseDown = getStepMouseHandler(i);
+                        placed.onMouseEnter = mouseEnterHandler;
+                        placed.onMouseLeave = mouseLeaveHandler;                        
                         break;
                     }
                 }
