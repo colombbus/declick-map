@@ -26,16 +26,21 @@
             var map;
             $(function(){
                 map = new DeclickMap();
-                map.init("map", "robot.svg");
+                map.init("map", "robot.svg", function(index) {
+                    $("#text").text("Ouverture de l'item n°" + index);
+                });
                 // Load path
                 map.loadPathFromJSON("path.json", function() {
                     // Load steps
                     // Option 1 from JSON file
-                    map.loadStepsFromJSON("steps.json");
+                    map.loadStepsFromJSON("steps.json", function() {
+                        map.setCurrentStep(6);
+                    });
                     // Option 2 from JS Object
                     /*
                      * $.getJSON("steps.json", function(pathData) {
                      *      map.loadSteps(pathData);
+                     *      map.setCurrentStep(6);
                      * });
                      */
                 });
@@ -47,9 +52,9 @@
                 passed = !passed;
             }
             
-            var current = 1;
+            var current = 7;
             function updateCurrent() {
-                map.setCurrentStep(current);
+                map.setCurrentStep(current, true);
                 current++;
             }
             

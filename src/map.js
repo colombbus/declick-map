@@ -18,6 +18,7 @@ function DeclickMap() {
     var margin = 40;
     var displayedSteps = [];
     var labels = [];
+    var stepCallback;
 
     // Initialization
     var initView = function(canvasId) {
@@ -160,9 +161,12 @@ function DeclickMap() {
         activeLayer.activate();            
     };
     
-    this.init = function(canvasId, currentImage) {
+    this.init = function(canvasId, currentImage, callback) {
         initView(canvasId);
         initSymbols(currentImage);
+        if (callback) {
+            stepCallback = callback;
+        }
     };
 
     var centerEveryting = function() {
@@ -250,10 +254,6 @@ function DeclickMap() {
         });
     };
 
-    var openStep = function(index) {
-        $("#text").text("Ouverture de l'item '" + steps[index].name + "'");
-    };
-
     var closeChapter = function() {
         if (currentChapterPath) {
             currentChapterPath.visible = false;
@@ -265,7 +265,10 @@ function DeclickMap() {
         $canvas.css("cursor", "default");
     };
 
-    var openChapter = function(index) {
+    var openChapter = function(index, animate) {
+        if (typeof animate === 'undefined') {
+            animate = false;
+        }
         if (currentChapterPath) {
             currentChapterPath.visible = false;
             currentChapterLabels.visible = false;
@@ -277,11 +280,18 @@ function DeclickMap() {
             currentChapterLabels.visible = true;
             var bounds = currentChapterPath.bounds;
             bounds = bounds.expand(margin);
-            targetCenter = bounds.center;
             var zHeight = paper.view.bounds.height / (bounds.height);
             var zWidth = paper.view.bounds.width / (bounds.width);
-            targetZoom = paper.view.zoom * Math.min(zHeight, zWidth);
-            target = true;
+            if (animate) {
+                targetCenter = bounds.center;
+                targetZoom = paper.view.zoom * Math.min(zHeight, zWidth);
+                target = true;
+            } else {
+                paper.view.center = bounds.center;
+                targetCenter = paper.view.center;
+                paper.view.zoom = paper.view.zoom * Math.min(zHeight, zWidth);
+                targetZoom = paper.view.zoom;
+            }
             $canvas.css("cursor", "pointer");
         } else {
             currentChapterPath = null;
@@ -431,7 +441,10 @@ function DeclickMap() {
 
         var getMouseHandler = function(i) {
             return function(event) {
-                openStep(i);
+                setCurrentStep(steps[i].id, false, true);
+                if (stepCallback) {
+                    stepCallback(steps[i].id);
+                }
                 event.preventDefault();
                 clickCaptured = true;
             };
@@ -439,7 +452,7 @@ function DeclickMap() {
 
         var getChapterMouseHandler = function(i) {
             return function(event) {
-                openChapter(i);
+                openChapter(i, true);
                 event.preventDefault();
                 clickCaptured = true;
             };
@@ -508,7 +521,7 @@ function DeclickMap() {
         });
     };
     
-    this.setCurrentStep = function(index) {
+    var setCurrentStep = function(index, animate, skipChapter) {
         var stepIndex = -1, chapterIndex = -1;
         // look for stepIndex
         for (var i=0;i<steps.length;i++) {
@@ -520,26 +533,40 @@ function DeclickMap() {
         if (stepIndex > -1) {
             // set target current position
             var step = displayedSteps[stepIndex];
-            targetCurrent = step.position;
-            target = true;
-            // look for corresponding chapter 
-            for (var j=stepIndex; j>=0; j--) {
-                if (steps[j].chapter) {
-                    for (var k=0; k<chapters.length;k++) {
-                        if (chapters[k] === displayedSteps[j]) {
-                            chapterIndex = k;
-                            break;
-                        }
-                    }
-                    break;
-                }
+            if (animate) {
+                targetCurrent = step.position;
+                target = true;
+            } else {
+                current.position = step.position;
+                targetCurrent = current.position;
             }
-            if (chapterIndex>-1) {
-                openChapter(chapterIndex);
+            if (!skipChapter) {
+                // look for corresponding chapter 
+                for (var j=stepIndex; j>=0; j--) {
+                    if (steps[j].chapter) {
+                        for (var k=0; k<chapters.length;k++) {
+                            if (chapters[k] === displayedSteps[j]) {
+                                chapterIndex = k;
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+                if (chapterIndex>-1) {
+                    openChapter(chapterIndex, animate);
+                }
             }
         } else {
             console.error("Step with index "+index+" not found");
         }
+    };
+    
+    this.setCurrentStep = function(index, animate) {
+        if (typeof animate === 'undefined') {
+            animate = false;
+        }
+        setCurrentStep(index, animate);
     };
 }
 
