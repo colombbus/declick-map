@@ -4,18 +4,20 @@ function DeclickMap() {
     var chapters = [];
     var lengths = [];
     var steps = [];
-    var pStep, pChapter, pChapterValidated, pStepValidated, pStepVisited, pCurrentStep;
-    var sStep, sChapter, sChapterValidated, sStepValidated, sStepVisited, sCurrentStep;
+    var pStep, pChapter, pChapterValidated, pStepValidated, pStepVisited, current;
+    var sStep, sChapter, sChapterValidated, sStepValidated, sStepVisited;
     var $canvas;
     var initCenter;
     var everything;
     var currentChapterPath, currentChapterLabels;
     var chapterPaths = [];
     var chapterLabels = [];
-    var targetZoom, targetCenter, target = false;
+    var targetZoom, targetCenter, targetCurrent, target = false;
     var clickCaptured = false;
     // margin around the path
     var margin = 40;
+    var displayedSteps = [];
+    var labels = [];
 
     // Initialization
     var initView = function(canvasId) {
@@ -28,6 +30,8 @@ function DeclickMap() {
         paper.setup(canvas);
 
         initCenter = paper.view.center;
+        targetCenter = initCenter;
+        targetZoom = 1;
 
         var dragX, dragY;
 
@@ -98,11 +102,21 @@ function DeclickMap() {
                         view.zoom = Math.max(view.zoom - stepZoom, targetZoom);
                     }
                 }
+                if (current.position !== targetCurrent) {
+                    target = true;
+                    var vector = targetCurrent.subtract(current.position);
+                    if (vector.length > stepCenter) {
+                        var step = vector.normalize(stepCenter);
+                        current.position = current.position.add(step);
+                    } else {
+                        current.position = targetCurrent;
+                    }
+                }
             }
         };
     };
 
-    var initSymbols = function() {
+    var initSymbols = function(currentSVG) {
         pChapter = new paper.Path.Circle(new paper.Point(0, 0), 12);
         pChapter.strokeColor = "#E01980";
         pChapter.strokeWidth = 2;
@@ -136,11 +150,19 @@ function DeclickMap() {
         pStepVisited = new paper.Path.Circle(new paper.Point(0, 0), 6);
         pStepVisited.fillColor = "#E33022";
         sStepVisited = new paper.Symbol(pStepVisited);
+        // load current image in a upper layer 
+        var activeLayer = paper.project.activeLayer;
+        var currentLayer = new paper.Layer();
+        paper.project.importSVG(currentSVG, function(item) {
+            current = item;
+            current.visible = false;
+        });
+        activeLayer.activate();            
     };
     
-    this.init = function(canvasId) {
+    this.init = function(canvasId, currentImage) {
         initView(canvasId);
-        initSymbols();
+        initSymbols(currentImage);
     };
 
     var centerEveryting = function() {
@@ -180,7 +202,9 @@ function DeclickMap() {
             if (callback) {
                 callback();
             }
-        });        
+        }).fail(function() {
+            console.error("Could not load JSON file: "+file);
+        });   
     };
 
     // Steps loading
@@ -197,17 +221,19 @@ function DeclickMap() {
             if (callback) {
                 callback();
             }
+        }).fail(function() {
+            console.error("Could not load JSON file: "+file);
         });
     };
     
     var initSteps = function(data) {
-        function getObject(value, type) {
-            var object = {type: type, name: value.name};
+        function getObject(value, chapter) {
+            var object = {chapter: chapter, name: value.name};
+            if (typeof value.id !== 'undefined') {
+                object.id = value.id;
+            }
             if (value.passed) {
                 object.passed = value.passed;
-            }
-            if (value.current) {
-                object.current = value.current;
             }
             if (value.visited) {
                 object.visited = value.visited;
@@ -215,10 +241,10 @@ function DeclickMap() {
             return object;
         }
         $.each(data, function(key, value) {
-            steps.push(getObject(value, "chapter"));
+            steps.push(getObject(value, true));
             if (value.steps) {
                 $.each(value.steps, function(key, value) {
-                    steps.push(getObject(value, "item"));
+                    steps.push(getObject(value, false));
                 });
             }
         });
@@ -293,7 +319,25 @@ function DeclickMap() {
         }
         check();
         return lines.join('\n');
-    }
+    };
+
+    var getSymbol = function(step) {
+        if (step.chapter) {
+            if (step.passed) {
+                return sChapterValidated;
+            } else {
+                return sChapter;
+            }
+        } else {
+            if (step.passed) {
+                return sStepValidated;
+            } else if (step.visited) {
+                return sStepVisited;
+            } else {
+                return sStep;
+            }
+        }
+    };
 
     // Position steps on the path
     var displaySteps = function(data) {
@@ -302,32 +346,12 @@ function DeclickMap() {
         var currentLabels;
         var basePath = path.clone();
 
-        var getSymbol = function(step) {
-            if (step.type === "chapter") {
-                if (step.passed) {
-                    return sChapterValidated;
-                } else {
-                    return sChapter;
-                }
-            } else {
-                if (step.passed) {
-                    return sStepValidated;
-                } else if (step.visited) {
-                    return sStepVisited;
-                } else {
-                    return sStep;
-                }
-            }
-        };
-
         var placeSymbol = function(index, curve, length) {
-            var chapter = false;
+            var chapter = steps[index].chapter;
             var symbol = getSymbol(steps[index]);
             var point = curve.getPointAt(length, false);
             var placed = symbol.place(point);
-            if (steps[index].type === "chapter") {
-                chapter = true;
-            }
+            displayedSteps.push(placed);
             everything.addChild(placed);
             if (chapter) {
                 if (previousChapter) {
@@ -361,6 +385,7 @@ function DeclickMap() {
             }
             placed.onMouseEnter = mouseEnterHandler;
             placed.onMouseLeave = mouseLeaveHandler;
+            // Label
             var textColor, textSize, textShift;
             if (chapter) {
                 textColor = "#E01980";
@@ -398,6 +423,7 @@ function DeclickMap() {
                 text.onMouseDown = getChapterMouseHandler(chapters.length - 1);
                 previousLabel = null;
             }
+            labels.push(text);
             text.onMouseEnter = mouseEnterHandler;
             text.onMouseLeave = mouseLeaveHandler;
             return placed;
@@ -444,7 +470,76 @@ function DeclickMap() {
             currentLength += stepLength;
         }
         currentCurve = curves[curves.length - 1];
+        // place last step
         placeSymbol(i, currentCurve, currentCurve.length);
+        // resize and place current image
+        current.position = displayedSteps[0].position;
+        targetCurrent = current.position;
+        current.fitBounds(displayedSteps[0].bounds);
+        current.scale(1.5);
+        current.visible = true;
+        everything.addChild(current);
+    };
+    
+    // Update data
+    this.updateState = function(udpatedSteps) {
+        $.each(udpatedSteps, function(key, value) {
+            if (value.id) {
+                // find corresponding step
+                for (var i=0;i<steps.length;i++) {
+                    if (steps[i].id && steps[i].id === value.id) {
+                        if (typeof value.passed !=='undefined') {
+                            steps[i].passed = value.passed;
+                        }
+                        if (typeof value.visited !=='undefined') {
+                            steps[i].visited = value.visited;
+                        }
+                        var old = displayedSteps[i];
+                        var point = old.position;
+                        old.remove();
+                        var symbol = getSymbol(steps[i]);
+                        var placed = symbol.place(point);
+                        everything.addChild(placed);
+                        displayedSteps[i] = placed;
+                        break;
+                    }
+                }
+            }
+        });
+    };
+    
+    this.setCurrentStep = function(index) {
+        var stepIndex = -1, chapterIndex = -1;
+        // look for stepIndex
+        for (var i=0;i<steps.length;i++) {
+            if (steps[i].id && steps[i].id === index) {
+                stepIndex = i;
+                break;
+            }
+        }
+        if (stepIndex > -1) {
+            // set target current position
+            var step = displayedSteps[stepIndex];
+            targetCurrent = step.position;
+            target = true;
+            // look for corresponding chapter 
+            for (var j=stepIndex; j>=0; j--) {
+                if (steps[j].chapter) {
+                    for (var k=0; k<chapters.length;k++) {
+                        if (chapters[k] === displayedSteps[j]) {
+                            chapterIndex = k;
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+            if (chapterIndex>-1) {
+                openChapter(chapterIndex);
+            }
+        } else {
+            console.error("Step with index "+index+" not found");
+        }
     };
 }
 

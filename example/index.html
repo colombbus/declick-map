@@ -23,9 +23,10 @@
         <script type="text/javascript" src="../lib/paper-full.min.js"></script>
         <script type="text/javascript" src="../src/map.js"></script>
         <script>
+            var map;
             $(function(){
-                var map = new DeclickMap();
-                map.init("map");
+                map = new DeclickMap();
+                map.init("map", "robot.svg");
                 // Load path
                 map.loadPathFromJSON("path.json", function() {
                     // Load steps
@@ -39,10 +40,26 @@
                      */
                 });
             });
+            
+            var passed = false;
+            function updateState() {
+                map.updateState([{id:1, passed:passed}]);
+                passed = !passed;
+            }
+            
+            var current = 1;
+            function updateCurrent() {
+                map.setCurrentStep(current);
+                current++;
+            }
+            
         </script>
+        
     </head>
     <body>
         <canvas id="map"></canvas>
+        <button onclick="updateState()">Mise à jour étape 1</button>
+        <button onclick="updateCurrent()">Mise à jour étape courante</button>
         <div id="text"></div>
     </body>
 </html>

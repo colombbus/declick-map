@@ -70,195 +70,198 @@
     },
     {
         "name": "BOB LE ROBOT",
+        "id": 13,
         "steps": [
             {
                 "name":"Création",
                 "passed":true,
-                "id": 13
+                "id": 14
             },
             {
                 "name":"Le robot est créé",
                 "passed":true,
-                "id": 14
+                "id": 15
             },
             {
                 "name":"En avant...",
                 "visited":true,
-                "id": 15
+                "id": 16
             },
             {
                 "name":"...en arrière",
                 "visited":true,
-                "id": 16
-            },
-            {
-                "name":"En route vers la sortie",
                 "id": 17
             },
             {
-                "name":"Descendons",
+                "name":"En route vers la sortie",
                 "id": 18
             },
             {
-                "name":"Des hauts et des bas",
+                "name":"Descendons",
                 "id": 19
             },
             {
-                "name":"Labyrinthe 1",
+                "name":"Des hauts et des bas",
                 "id": 20
             },
             {
-                "name":"Les paramètres",
+                "name":"Labyrinthe 1",
                 "id": 21
             },
             {
-                "name":"Labyrinthe 2",
+                "name":"Les paramètres",
                 "id": 22
             },
             {
-                "name":"Cases numérotées",
+                "name":"Labyrinthe 2",
                 "id": 23
             },
             {
-                "name":"Il tombe !",
+                "name":"Cases numérotées",
                 "id": 24
+            },
+            {
+                "name":"Il tombe !",
+                "id": 25
             }
         ]
     },
     {
-        "name": "MAX LE MACON",,
-        "id": 25,
+        "name": "MAX LE MACON",
+        "id": 26,
         "steps": [
             {
                 "name":"Un maçon pour aider",
-                "id": 26
-            },
-            {
-                "name":"La cédille",
                 "id": 27
             },
             {
-                "name":"Ajoutons un maçon",
+                "name":"La cédille",
                 "id": 28
             },
             {
-                "name":"Une porte pour entrer",
+                "name":"Ajoutons un maçon",
                 "id": 29
             },
             {
-                "name":"Un sol pour ne pas tomber",
+                "name":"Une porte pour entrer",
                 "id": 30
             },
             {
-                "name":"Première plateforme",
+                "name":"Un sol pour ne pas tomber",
                 "id": 31
             },
             {
-                "name":"Répéter",
+                "name":"Première plateforme",
                 "id": 32
             },
             {
-                "name":"Les accolades",
+                "name":"Répéter",
                 "id": 33
             },
             {
-                "name":"Deuxième plateforme",
+                "name":"Les accolades",
                 "id": 34
             },
             {
-                "name":"Un mur",
+                "name":"Deuxième plateforme",
                 "id": 35
             },
             {
-                "name":"Un escalier",
+                "name":"Un mur",
                 "id": 36
             },
             {
-                "name":"Plateforme à trous",
+                "name":"Un escalier",
                 "id": 37
             },
             {
-                "name":"Poser une ligne",
+                "name":"Plateforme à trous",
                 "id": 38
             },
             {
-                "name":"Parcours libre",
+                "name":"Poser une ligne",
                 "id": 39
+            },
+            {
+                "name":"Parcours libre",
+                "id": 40
             }
         ]
     },
     {
         "name": "ITEM",
+        "id": 41,
         "steps": [
             {
                 "name":"Les guillemets",
-                "id": 40
-            },
-            {
-                "name":"Une clé",
-                "id": 41
-            },
-            {
-                "name":"Une clé pour ouvrir la porte",
                 "id": 42
             },
             {
-                "name":"Parcours libre",
+                "name":"Une clé",
                 "id": 43
             },
             {
-                "name":"Des sous !",
+                "name":"Une clé pour ouvrir la porte",
                 "id": 44
             },
             {
-                "name":"Les tests",
+                "name":"Parcours libre",
                 "id": 45
             },
             {
-                "name":"Jour, Nuit",
+                "name":"Des sous !",
                 "id": 46
             },
             {
-                "name":"Des sous ! Mais où ?",
+                "name":"Les tests",
                 "id": 47
             },
             {
-                "name":"Les deux portes",
+                "name":"Jour, Nuit",
                 "id": 48
             },
             {
-                "name":"Vie et poison",
+                "name":"Des sous ! Mais où ?",
                 "id": 49
             },
             {
-                "name":"La vie en rouge",
+                "name":"Les deux portes",
                 "id": 50
+            },
+            {
+                "name":"Vie et poison",
+                "id": 51
+            },
+            {
+                "name":"La vie en rouge",
+                "id": 52
             }
         ]
     },
     {
         "name": "LE CLAVIER",
+        "id": 53,
         "steps": [
             {
                 "name":"Un d pour avancer",
-                "id": 51
+                "id": 54
             },
             {
                 "name":"Les tests",
-                "id": 52
+                "id": 55
             },
             {
                 "name":"Jusqu'à l'infini !",
-                "id": 53
+                "id": 56
             },
             {
                 "name":"Aller et retour",
-                "id": 54
+                "id": 57
             }
         ]
     },
     {
         "name": "CREER TON JEU VIDEO",
-        "id": 55
+        "id": 58
     }
 ]
