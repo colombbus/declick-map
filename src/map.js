@@ -263,6 +263,7 @@ function DeclickMap() {
         targetCenter = initCenter;
         target = true;
         $canvas.css("cursor", "default");
+        currentChapterPath = null;
     };
 
     var openChapter = function(index, animate) {
