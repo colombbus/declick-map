@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            body {
+                background-color:#000000;
+            }
+            #map {
+                width:100%;
+                height:500px;
+                background-color:#46102A;
+                margin-right:auto;
+                margin-left:auto;
+            }
+            #text {
+                color:#FFFFFF;
+            }
+        </style>
+        <script type="text/javascript" src="../lib/jquery-2.2.0.min.js"></script>
+        <script type="text/javascript" src="../lib/paper-full.min.js"></script>
+        <script type="text/javascript" src="../src/map.js"></script>
+        <script>
+            $(function(){
+                var map = new DeclickMap();
+                map.init("map");
+                // Load path
+                map.loadPathFromJSON("path.json", function() {
+                    // Load steps
+                    // Option 1 from JSON file
+                    map.loadStepsFromJSON("steps.json");
+                    // Option 2 from JS Object
+                    /*
+                     * $.getJSON("steps.json", function(pathData) {
+                     *      map.loadSteps(pathData);
+                     * });
+                     */
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <canvas id="map"></canvas>
+        <div id="text"></div>
+    </body>
+</html>
