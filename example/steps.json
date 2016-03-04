@@ -2,56 +2,69 @@
     {
         "name": "CREATION D'UN COMPTE",
         "passed": true,
+        "id": 0,
         "steps": [
             {
                 "name":"Bienvenue",
-                "passed":true
+                "passed":true,
+                "id": 1
             },
             {
                 "name":"Objectifs",
-                "passed":true
+                "passed":true,
+                "id": 2
             },
             {
                 "name":"Instructions",
-                "passed":true
+                "passed":true,
+                "id": 3
             },
             {
                 "name":"Informations utiles",
-                "passed":true
+                "passed":true,
+                "id": 4
             }
         ]
     },
     {
         "name": "QUELQUES RAPPELS",
         "passed": true,
+        "id": 5,        
         "steps": [
             {
                 "name":"Minuscules",
-                "passed":true
+                "passed":true,
+                "id": 6        
             },
             {
                 "name":"Petites et grandes lettres",
-                "passed":true
+                "passed":true,
+                "id": 7
             },
             {
                 "name":"Majuscules",
-                "passed":true
+                "passed":true,
+                "id": 8
             },
             {
                 "name":"Des signes mathématiques",
-                "passed":true
+                "passed":true,
+                "id": 9
             },
             {
                 "name":"La formule",
-                "passed":true
+                "passed":true,
+                "id": 10
             },
             {
                 "name":"Point final",
-                "passed":true
+                "passed":true,
+                "id": 11
             },
             {
                 "name":"Le point",
-                "passed":true
+                "passed":true,
+                "id": 12
             }
         ]
     },
@@ -60,90 +73,117 @@
         "steps": [
             {
                 "name":"Création",
-                "passed":true
+                "passed":true,
+                "id": 13
             },
             {
                 "name":"Le robot est créé",
-                "passed":true
+                "passed":true,
+                "id": 14
             },
             {
                 "name":"En avant...",
-                "visited":true
+                "visited":true,
+                "id": 15
             },
             {
                 "name":"...en arrière",
-                "visited":true
+                "visited":true,
+                "id": 16
             },
             {
-                "name":"En route vers la sortie"
+                "name":"En route vers la sortie",
+                "id": 17
             },
             {
-                "name":"Descendons"
+                "name":"Descendons",
+                "id": 18
             },
             {
-                "name":"Des hauts et des bas"
+                "name":"Des hauts et des bas",
+                "id": 19
             },
             {
-                "name":"Labyrinthe 1"
+                "name":"Labyrinthe 1",
+                "id": 20
             },
             {
-                "name":"Les paramètres"
+                "name":"Les paramètres",
+                "id": 21
             },
             {
-                "name":"Labyrinthe 2"
+                "name":"Labyrinthe 2",
+                "id": 22
             },
             {
-                "name":"Cases numérotées"
+                "name":"Cases numérotées",
+                "id": 23
             },
             {
-                "name":"Il tombe !"
+                "name":"Il tombe !",
+                "id": 24
             }
         ]
     },
     {
-        "name": "MAX LE MACON",
+        "name": "MAX LE MACON",,
+        "id": 25,
         "steps": [
             {
-                "name":"Un maçon pour aider"
+                "name":"Un maçon pour aider",
+                "id": 26
             },
             {
-                "name":"La cédille"
+                "name":"La cédille",
+                "id": 27
             },
             {
-                "name":"Ajoutons un maçon"
+                "name":"Ajoutons un maçon",
+                "id": 28
             },
             {
-                "name":"Une porte pour entrer"
+                "name":"Une porte pour entrer",
+                "id": 29
             },
             {
-                "name":"Un sol pour ne pas tomber"
+                "name":"Un sol pour ne pas tomber",
+                "id": 30
             },
             {
-                "name":"Première plateforme"
+                "name":"Première plateforme",
+                "id": 31
             },
             {
-                "name":"Répéter"
+                "name":"Répéter",
+                "id": 32
             },
             {
-                "name":"Les accolades"
+                "name":"Les accolades",
+                "id": 33
             },
             {
-                "name":"Deuxième plateforme"
+                "name":"Deuxième plateforme",
+                "id": 34
             },
             {
-                "name":"Un mur"
+                "name":"Un mur",
+                "id": 35
             },
             {
-                "name":"Un escalier"
+                "name":"Un escalier",
+                "id": 36
             },
             {
-                "name":"Plateforme à trous"
+                "name":"Plateforme à trous",
+                "id": 37
             },
             {
-                "name":"Poser une ligne"
+                "name":"Poser une ligne",
+                "id": 38
             },
             {
-                "name":"Parcours libre"
+                "name":"Parcours libre",
+                "id": 39
             }
         ]
     },
@@ -151,37 +191,48 @@
         "name": "ITEM",
         "steps": [
             {
-                "name":"Les guillemets"
+                "name":"Les guillemets",
+                "id": 40
             },
             {
-                "name":"Une clé"
+                "name":"Une clé",
+                "id": 41
             },
             {
-                "name":"Une clé pour ouvrir la porte"
+                "name":"Une clé pour ouvrir la porte",
+                "id": 42
             },
             {
-                "name":"Parcours libre"
+                "name":"Parcours libre",
+                "id": 43
             },
             {
-                "name":"Des sous !"
+                "name":"Des sous !",
+                "id": 44
             },
             {
-                "name":"Les tests"
+                "name":"Les tests",
+                "id": 45
             },
             {
-                "name":"Jour, Nuit"
+                "name":"Jour, Nuit",
+                "id": 46
             },
             {
-                "name":"Des sous ! Mais où ?"
+                "name":"Des sous ! Mais où ?",
+                "id": 47
             },
             {
-                "name":"Les deux portes"
+                "name":"Les deux portes",
+                "id": 48
             },
             {
-                "name":"Vie et poison"
+                "name":"Vie et poison",
+                "id": 49
             },
             {
-                "name":"La vie en rouge"
+                "name":"La vie en rouge",
+                "id": 50
             }
         ]
     },
@@ -189,20 +240,25 @@
         "name": "LE CLAVIER",
         "steps": [
             {
-                "name":"Un d pour avancer"
+                "name":"Un d pour avancer",
+                "id": 51
             },
             {
-                "name":"Les tests"
+                "name":"Les tests",
+                "id": 52
             },
             {
-                "name":"Jusqu'à l'infini !"
+                "name":"Jusqu'à l'infini !",
+                "id": 53
             },
             {
-                "name":"Aller et retour"
+                "name":"Aller et retour",
+                "id": 54
             }
         ]
     },
     {
-        "name": "CREER TON JEU VIDEO"
+        "name": "CREER TON JEU VIDEO",
+        "id": 55
     }
 ]
