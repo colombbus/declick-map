@@ -2,7 +2,6 @@ function DeclickMap() {
     // Variables declaration
     var path;
     var chapters = [];
-    var lengths = [];
     var steps = [];
     var pStep, pChapter, pChapterValidated, pStepValidated, pStepVisited, current;
     var sStep, sChapter, sChapterValidated, sStepValidated, sStepVisited;
@@ -19,6 +18,7 @@ function DeclickMap() {
     var displayedSteps = [];
     var labels = [];
     var stepCallback;
+    var currentIndex = 0;
 
     // Initialization
     var initView = function(canvasId) {
@@ -71,12 +71,6 @@ function DeclickMap() {
             }
         };
 
-        // view resizing
-        paper.view.onResize = function(event) {
-            initCenter = paper.view.center;
-            centerEveryting();
-        };
-
         // Map animation
         var stepZoom = 0.05;
         var stepCenter = 10;
@@ -117,7 +111,7 @@ function DeclickMap() {
         };
     };
 
-    var initSymbols = function(currentSVG) {
+    var initSymbols = function(currentSVG, callback) {
         pChapter = new paper.Path.Circle(new paper.Point(0, 0), 12);
         pChapter.strokeColor = "#E01980";
         pChapter.strokeWidth = 2;
@@ -157,15 +151,18 @@ function DeclickMap() {
         paper.project.importSVG(currentSVG, function(item) {
             current = item;
             current.visible = false;
+            if (callback) {
+                callback();
+            }
         });
         activeLayer.activate();            
     };
     
-    this.init = function(canvasId, currentImage, callback) {
+    this.init = function(canvasId, currentImage, newStepCallback, callback) {
         initView(canvasId);
-        initSymbols(currentImage);
-        if (callback) {
-            stepCallback = callback;
+        initSymbols(currentImage, callback);
+        if (newStepCallback) {
+            stepCallback = newStepCallback;
         }
     };
 
@@ -189,11 +186,6 @@ function DeclickMap() {
             path.strokeWidth = data.width;
         }
 
-        // init lengths table
-        var curves = path.curves;
-        for (var i = 0; i < curves.length; i++) {
-            lengths.push(curves[i].length);
-        }
         everything = new paper.Group();
         everything.addChild(path);
         centerEveryting();
@@ -215,6 +207,14 @@ function DeclickMap() {
     this.loadSteps = function(data) {
         initSteps(data);
         displaySteps();
+        // view resizing
+        paper.view.onResize = function(event) {
+            initCenter = paper.view.center;
+            targetCenter = initCenter;
+            targetZoom = 1;
+            //centerEveryting();
+            resize();
+        };
         paper.view.draw();
     };
 
@@ -280,7 +280,7 @@ function DeclickMap() {
             currentChapterLabels = chapterLabels[index];
             currentChapterLabels.visible = true;
             var bounds = currentChapterPath.bounds;
-            bounds = bounds.expand(margin);
+            bounds = bounds.expand(2*margin);
             var zHeight = paper.view.bounds.height / (bounds.height);
             var zWidth = paper.view.bounds.width / (bounds.width);
             if (animate) {
@@ -349,9 +349,31 @@ function DeclickMap() {
             }
         }
     };
+    
+    var resize = function() {
+        // remove everything
+        paper.project.activeLayer.removeChildren();
+        // create new group
+        everything = new paper.Group();
+        // fit path to new dimensions
+        path.fitBounds(paper.view.bounds.expand(-margin));
+        // add path to new group
+        everything.addChild(path);
+        // center everything
+        centerEveryting();
+        // initialize data
+        displayedSteps = [];
+        chapterPaths = [];
+        chapterLabels = [];
+        chapters = [];
+        labels = [];
+        // display steps
+        displaySteps();
+    };
+
 
     // Position steps on the path
-    var displaySteps = function(data) {
+    var displaySteps = function() {
         var previousChapter = false;
         var previousLabel;
         var currentLabels;
@@ -442,14 +464,14 @@ function DeclickMap() {
 
         var stepLength = path.length / (steps.length - 1);
         var curves = path.curves;
-        var currentIndex = 0;
+        var currIndex = 0;
         var currentCurve = curves[0];
         var currentLength = 0;
         for (var i = 0; i < steps.length - 1; i++) {
             while (currentLength > currentCurve.length) {
                 currentLength -= currentCurve.length;
-                currentIndex++;
-                currentCurve = curves[currentIndex];
+                currIndex++;
+                currentCurve = curves[currIndex];
             }
             placeSymbol(i, currentCurve, currentLength);
             currentLength += stepLength;
@@ -458,9 +480,9 @@ function DeclickMap() {
         // place last step
         placeSymbol(i, currentCurve, currentCurve.length);
         // resize and place current image
-        current.position = displayedSteps[0].position;
+        current.position = displayedSteps[currentIndex].position;
         targetCurrent = current.position;
-        current.fitBounds(displayedSteps[0].bounds);
+        current.fitBounds(displayedSteps[currentIndex].bounds);
         current.scale(1.5);
         current.visible = true;
         everything.addChild(current);
@@ -536,6 +558,7 @@ function DeclickMap() {
             }
         }
         if (stepIndex > -1) {
+            currentIndex = stepIndex;
             // set target current position
             var step = displayedSteps[stepIndex];
             if (animate) {
