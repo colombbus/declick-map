@@ -233,6 +233,7 @@ function DeclickMap() {
     };
     
     var initSteps = function(data) {
+        steps = [];
         function getObject(value, chapter) {
             var object = {chapter: chapter, name: value.name};
             if (typeof value.id !== 'undefined') {
@@ -361,11 +362,13 @@ function DeclickMap() {
         // create new group
         everything = new paper.Group();
         // fit path to new dimensions
-        path.fitBounds(paper.view.bounds.expand(-margin));
-        // add path to new group
-        everything.addChild(path);
-        // center everything
-        centerEveryting();
+        if (path) {
+            path.fitBounds(paper.view.bounds.expand(-margin));
+            // add path to new group
+            everything.addChild(path);
+            // center everything
+            centerEveryting();
+        }
         // initialize data
         displayedSteps = [];
         chapterPaths = [];
@@ -373,7 +376,9 @@ function DeclickMap() {
         chapters = [];
         labels = [];
         paper.view.zoom = 1;
-        paper.view.center = initCenter;
+        if (initCenter) {
+            paper.view.center = initCenter;
+        }
     };
     
     var resize = function() {
