@@ -624,6 +624,8 @@ function DeclickMap() {
                 window.dispatchEvent(evt);
             }
         }
+        // remove any precedently bound mousemove handlers
+        $canvas.off("mousemove");
     };
 }
 
