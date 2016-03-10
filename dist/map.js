@@ -377,7 +377,7 @@ function DeclickMap() {
         displaySteps();
         // open chapter if required
         if (currentIndex>-1 && chapterOpen) {
-            setCurrentStep(currentIndex, false);
+            setCurrentStep(steps[currentIndex].id, false);
         }
     };
 
