@@ -42,6 +42,7 @@ function DeclickMap() {
             paper.view.scrollBy(p);
             dragX = event.pageX;
             dragY = event.pageY;
+            clickCaptured = true;
         };
         
         $canvas.click(function(event) {
@@ -97,7 +98,7 @@ function DeclickMap() {
                         view.zoom = Math.max(view.zoom - stepZoom, targetZoom);
                     }
                 }
-                if (current.position !== targetCurrent) {
+                if (!current.position.equals(targetCurrent)) {
                     target = true;
                     var vector = targetCurrent.subtract(current.position);
                     if (vector.length > stepCenter) {
@@ -351,7 +352,6 @@ function DeclickMap() {
     };
     
     var resize = function() {
-        console.log("resizing");
         // remove everything
         paper.project.activeLayer.removeChildren();
         // create new group
