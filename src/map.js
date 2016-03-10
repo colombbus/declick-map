@@ -351,6 +351,7 @@ function DeclickMap() {
     };
     
     var resize = function() {
+        console.log("resizing");
         // remove everything
         paper.project.activeLayer.removeChildren();
         // create new group
@@ -367,6 +368,7 @@ function DeclickMap() {
         chapterLabels = [];
         chapters = [];
         labels = [];
+        paper.view.zoom = 1;
         // display steps
         displaySteps();
     };
@@ -484,7 +486,18 @@ function DeclickMap() {
         targetCurrent = current.position;
         current.fitBounds(displayedSteps[currentIndex].bounds);
         current.scale(1.5);
-        current.visible = true;
+        current.visible = false;
+        current.onMouseDown = function(event) {
+            setCurrentStep(steps[currentIndex].id, false, true);
+            if (stepCallback) {
+                stepCallback(steps[currentIndex].id);
+            }
+            event.preventDefault();
+            clickCaptured = true;            
+        };
+        current.onMouseEnter = mouseEnterHandler;
+        current.onMouseLeave = mouseLeaveHandler;
+
         everything.addChild(current);
     };
     
@@ -558,6 +571,7 @@ function DeclickMap() {
             }
         }
         if (stepIndex > -1) {
+            current.visible = true;
             currentIndex = stepIndex;
             // set target current position
             var step = displayedSteps[stepIndex];
@@ -595,6 +609,21 @@ function DeclickMap() {
             animate = false;
         }
         setCurrentStep(index, animate);
+    };
+    
+    this.update = function() {
+        // check size
+        var cSize = new paper.Size($canvas.width(), $canvas.height());
+        if (!cSize.equals(paper.view.size)) {
+            try {
+                window.dispatchEvent(new Event('resize'));
+            } catch (e) {
+                // Problem in IE: try the IE way
+                var evt = window.document.createEvent('UIEvents'); 
+                evt.initUIEvent('resize', true, false, window, 0); 
+                window.dispatchEvent(evt);
+            }
+        }
     };
 }
 

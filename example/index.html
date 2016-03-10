@@ -14,13 +14,14 @@
                 background-color:#46102A;
                 margin-right:auto;
                 margin-left:auto;
+                display:none;
             }
             #text {
                 color:#FFFFFF;
             }
         </style>
         <script type="text/javascript" src="../lib/jquery-2.2.0.min.js"></script>
-        <script type="text/javascript" src="../lib/paper-full.min.js"></script>
+        <script type="text/javascript" src="../lib/paper-full.js"></script>
         <script type="text/javascript" src="../src/map.js"></script>
         <script>
             var map;
@@ -60,6 +61,11 @@
                 current++;
             }
             
+            function show() {
+                $("#map").show();
+                map.update();
+            }
+            
         </script>
         
     </head>
@@ -68,5 +74,6 @@
         <button onclick="updateState()">Mise à jour étape 1</button>
         <button onclick="updateCurrent()">Mise à jour étape courante</button>
         <div id="text"></div>
+        <button onclick="show()">Apparaître</button>
     </body>
 </html>
