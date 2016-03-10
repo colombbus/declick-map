@@ -355,7 +355,7 @@ function DeclickMap() {
         }
     };
     
-    var resize = function() {
+    var removeSteps = function() {
         // remove everything
         paper.project.activeLayer.removeChildren();
         // create new group
@@ -373,6 +373,11 @@ function DeclickMap() {
         chapters = [];
         labels = [];
         paper.view.zoom = 1;
+        paper.view.center = initCenter;
+    };
+    
+    var resize = function() {
+        removeSteps();
         // display steps
         displaySteps();
         // open chapter if required
@@ -641,6 +646,10 @@ function DeclickMap() {
         }
         // remove any precedently bound mousemove handlers
         $canvas.off("mousemove");
+    };
+    
+    this.removeSteps = function() {
+        removeSteps();
     };
 }
 
