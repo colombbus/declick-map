@@ -13,13 +13,15 @@ function DeclickMap() {
     var chapterLabels = [];
     var targetZoom, targetCenter, targetCurrent, target = false;
     var clickCaptured = false;
-    // margin around the path
-    var margin = 40;
     var displayedSteps = [];
     var labels = [];
     var stepCallback;
     var currentIndex = -1;
     var chapterOpen = false;
+
+    // margin around the path
+    var margin = 40;
+
 
     // Initialization
     var initView = function(canvasId) {
@@ -359,6 +361,21 @@ function DeclickMap() {
     var removeSteps = function() {
         // remove everything
         paper.project.activeLayer.removeChildren();
+        // initialize data
+        displayedSteps = [];
+        chapterPaths = [];
+        chapterLabels = [];
+        chapters = [];
+        labels = [];
+        currentIndex = -1;
+        chapterOpen = false;
+        target = false;
+        if (initCenter) {
+            paper.view.center = new paper.Point(initCenter);
+            targetCenter = new paper.Point(initCenter);
+        }
+        paper.view.zoom = 1;
+        targetZoom = 1;
         // create new group
         everything = new paper.Group();
         // fit path to new dimensions
@@ -368,18 +385,6 @@ function DeclickMap() {
             everything.addChild(path);
             // center everything
             centerEveryting();
-        }
-        // initialize data
-        displayedSteps = [];
-        chapterPaths = [];
-        chapterLabels = [];
-        chapters = [];
-        labels = [];
-        paper.view.zoom = 1;
-        currentIndex = -1;
-        chapterOpen = false;
-        if (initCenter) {
-            paper.view.center = initCenter;
         }
     };
     
