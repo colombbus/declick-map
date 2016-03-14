@@ -18,9 +18,13 @@ function DeclickMap() {
     var stepCallback;
     var currentIndex = -1;
     var chapterOpen = false;
+    var movementSpeed, zoomSpeed;
 
     // margin around the path
     var margin = 40;
+    // duration of animations
+    var animationDuration = 0.8;
+
 
 
     // Initialization
@@ -76,14 +80,13 @@ function DeclickMap() {
         };
 
         // Map animation
-        var stepZoom = 0.05;
-        var stepCenter = 10;
         paper.view.onFrame = function(event) {
             if (target) {
                 var view = paper.view;
                 var center = view.center;
                 target = false;
                 if (!center.equals(targetCenter)) {
+                    var stepCenter = event.delta*movementSpeed;
                     target = true;
                     var vector = targetCenter.subtract(center);
                     if (vector.length > stepCenter) {
@@ -94,6 +97,7 @@ function DeclickMap() {
                     }
                 }
                 if (view.zoom !== targetZoom) {
+                    var stepZoom = event.delta*zoomSpeed;
                     target = true;
                     if (view.zoom < targetZoom) {
                         view.zoom = Math.min(view.zoom + stepZoom, targetZoom);
@@ -264,9 +268,7 @@ function DeclickMap() {
             currentChapterPath.visible = false;
             currentChapterLabels.visible = false;
         }
-        targetZoom = 1;
-        targetCenter = new paper.Point(initCenter);
-        target = true;
+        setTarget(initCenter, 1);
         $canvas.css("cursor", "default");
         currentChapterPath = null;
         chapterOpen = false;
@@ -290,9 +292,7 @@ function DeclickMap() {
             var zHeight = paper.view.bounds.height / (bounds.height);
             var zWidth = paper.view.bounds.width / (bounds.width);
             if (animate) {
-                targetCenter = new paper.Point(bounds.center);
-                targetZoom = paper.view.zoom * Math.min(zHeight, zWidth);
-                target = true;
+                setTarget(bounds.center, paper.view.zoom * Math.min(zHeight, zWidth));
             } else {
                 paper.view.center = new paper.Point(bounds.center);
                 targetCenter = new paper.Point(paper.view.center);
@@ -305,6 +305,14 @@ function DeclickMap() {
             currentChapterPath = null;
             chapterOpen = false;
         }
+    };
+    
+    var setTarget = function(center, zoom) {
+        targetCenter = new paper.Point(center);
+        targetZoom = zoom;
+        movementSpeed = (paper.view.center.getDistance(targetCenter))/animationDuration;
+        zoomSpeed = Math.abs(zoom - paper.view.zoom)/animationDuration;
+        target = true;
     };
 
 
