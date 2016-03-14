@@ -376,6 +376,8 @@ function DeclickMap() {
         chapters = [];
         labels = [];
         paper.view.zoom = 1;
+        currentIndex = -1;
+        chapterOpen = false;
         if (initCenter) {
             paper.view.center = initCenter;
         }
