@@ -40,6 +40,13 @@ function DeclickMap() {
         initCenter = new paper.Point(paper.view.center);
         targetCenter = new paper.Point(initCenter);
         targetZoom = 1;
+        
+        // view resizing
+        paper.view.onResize = function(event) {
+            initCenter = new paper.Point(paper.view.center);
+            targetCenter = new paper.Point(initCenter);
+            targetZoom = 1;
+        };
 
         var dragX, dragY;
 
