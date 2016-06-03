@@ -397,12 +397,14 @@ function DeclickMap() {
     };
     
     var resize = function() {
+        var savedCurrentIndex = currentIndex;
+        var savedChapterOpen = chapterOpen;
         removeSteps();
         // display steps
         displaySteps();
         // open chapter if required
-        if (currentIndex>-1 && chapterOpen) {
-            setCurrentStep(steps[currentIndex].id, false);
+        if (savedCurrentIndex>-1 && savedChapterOpen) {
+            setCurrentStep(steps[savedCurrentIndex].id, false);
         }
     };
 
