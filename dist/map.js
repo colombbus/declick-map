@@ -464,6 +464,8 @@ function DeclickMap() {
                     content: chapters.length
                 });
                 textNumber.bounds.center = point;
+                textNumber.onMouseEnter = mouseEnterHandler;
+                textNumber.onMouseLeave = mouseLeaveHandler;
                 if (hasSubItems) {
                     placed.onMouseDown = getChapterMouseHandler(chapters.length - 1);
                     textNumber.onMouseDown = getChapterMouseHandler(chapters.length - 1);
