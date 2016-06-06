@@ -448,12 +448,12 @@ function DeclickMap() {
                 currentLabels.visible = false;
                 if (typeof steps[index+1] !== 'undefined' && !steps[index+1].chapter) {
                         hasSubItems = true;
-                } 
+                }
                 if (hasSubItems) {
-                        placed.onMouseDown = getChapterMouseHandler(chapters.length - 1);
+                    placed.onMouseDown = getChapterMouseHandler(chapters.length - 1);
                 } else {
-                        // no subitems: open corresponding step
-                        placed.onMouseDown = getStepMouseHandler(index)
+                    // no subitems: open corresponding step
+                    placed.onMouseDown = getStepMouseHandler(index)
                 }
                 // display chapter number
                 var textNumber = new paper.PointText({
@@ -464,7 +464,14 @@ function DeclickMap() {
                     content: chapters.length
                 });
                 textNumber.bounds.center = point;
-                textNumber.onMouseDown = getChapterMouseHandler(chapters.length - 1);
+                if (hasSubItems) {
+                    placed.onMouseDown = getChapterMouseHandler(chapters.length - 1);
+                    textNumber.onMouseDown = getChapterMouseHandler(chapters.length - 1);
+                } else {
+                    // no subitems: open corresponding step
+                    placed.onMouseDown = getStepMouseHandler(index);
+                    textNumber.onMouseDown = getStepMouseHandler(index);
+                }
                 everything.addChild(textNumber);
             } else {
                 placed.onMouseDown = getStepMouseHandler(index);
@@ -507,9 +514,9 @@ function DeclickMap() {
                 }
                 everything.addChild(text);
                 if (hasSubItems) {
-                        text.onMouseDown = getChapterMouseHandler(chapters.length - 1);
+                    text.onMouseDown = getChapterMouseHandler(chapters.length - 1);
                 } else {
-                        text.onMouseDown = getStepMouseHandler(index);
+                    text.onMouseDown = getStepMouseHandler(index);
                 }
                 previousLabel = null;
             }
