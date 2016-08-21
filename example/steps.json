@@ -29,12 +29,12 @@
     {
         "name": "QUELQUES RAPPELS",
         "passed": true,
-        "id": 5,        
+        "id": 5,
         "steps": [
             {
                 "name":"Minuscules",
                 "passed":true,
-                "id": 6        
+                "id": 6
             },
             {
                 "name":"Petites et grandes lettres",

@@ -429,19 +429,20 @@ function DeclickMap() {
         var currentLabels;
         var basePath = path.clone();
 
-        var placeSymbol = function(index, curve, length) {
+        var placeSymbol = function(index, curve, length, last) {
             var chapter = steps[index].chapter;
             var symbol = getSymbol(steps[index]);
             var point = curve.getPointAt(length, false);
             var placed = symbol.place(point);
             var hasSubItems = false;
+            var offset, newPath, chapterPath;
             displayedSteps.push(placed);
             everything.addChild(placed);
             if (chapter) {
                 if (previousChapter) {
-                    var offset = basePath.getOffsetOf(placed.position);
-                    var newPath = basePath.split(offset);
-                    var chapterPath = basePath;
+                    offset = basePath.getOffsetOf(placed.position);
+                    newPath = basePath.split(offset);
+                    chapterPath = basePath;
                     chapterPath.visible = false;
                     chapterPaths.push(chapterPath);
                     basePath = newPath;
@@ -483,6 +484,16 @@ function DeclickMap() {
                 everything.addChild(textNumber);
             } else {
                 placed.onMouseDown = getStepMouseHandler(index);
+                if (last) {
+                    offset = basePath.getOffsetOf(placed.position);
+                    newPath = basePath.split(offset);
+                    chapterPath = basePath;
+                    chapterPath.visible = false;
+                    chapterPaths.push(chapterPath);
+                    basePath = newPath;
+                    everything.addChild(currentLabels);
+                    chapterLabels.push(currentLabels);
+                }
             }
             placed.onMouseEnter = mouseEnterHandler;
             placed.onMouseLeave = mouseLeaveHandler;
@@ -550,7 +561,8 @@ function DeclickMap() {
         }
         currentCurve = curves[curves.length - 1];
         // place last step
-        placeSymbol(i, currentCurve, currentCurve.length);
+        placeSymbol(i, currentCurve, currentCurve.length, true);
+
         // resize and place current image
         var startIndex;
         if (currentIndex === -1) {
