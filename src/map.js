@@ -24,6 +24,13 @@ function DeclickMap() {
     var margin = 40;
     // duration of animations
     var animationDuration = 0.8;
+    
+    var zoomFactor = 200;
+    
+    var zoomDisplayLabels = 1.5;
+    var maxZoom = 3;
+    
+    var labelsVisible = false;
 
 
 
@@ -48,32 +55,40 @@ function DeclickMap() {
             targetZoom = 1;
         };
 
-        var dragX, dragY;
-
-        // mouse management
-        var moveTracker = function(event) {
-            var p = new paper.Point(dragX - event.pageX, dragY - event.pageY);
-            paper.view.scrollBy(p);
-            dragX = event.pageX;
-            dragY = event.pageY;
-            clickCaptured = true;
-        };
-
-        $canvas.click(function(event) {
-            if (!clickCaptured) {
-                closeChapter();
+        var scrollTimeout = -1;
+        var endScrollTimeout = -1;
+        var scrollAmount = 0;
+        
+        $canvas.mousewheel(function(event) {
+            event.preventDefault();
+            if (endScrollTimeout !== -1) {
+                clearTimeout(endScrollTimeout);
             }
-            clickCaptured = false;
-        });
-
-        $canvas.mousedown(function(event) {
-            dragX = event.pageX;
-            dragY = event.pageY;
-            $canvas.on("mousemove", moveTracker);
-        });
-
-        $canvas.mouseup(function(event) {
-            $canvas.off("mousemove", moveTracker);
+            scrollAmount = event.deltaY*event.deltaFactor;
+            
+            if (scrollTimeout === -1) {
+                var newZoom = targetZoom+scrollAmount/zoomFactor;
+                if (newZoom <0 ) {
+                    newZoom = 0;
+                } else {
+                    newZoom = Math.min(newZoom, maxZoom);
+                }
+                var newCenter = paper.view.getEventPoint(event);
+                setTarget(newCenter, newZoom);
+                scrollAmount = 0;
+                scrollTimeout = setTimeout(function() {
+                    var newZoom = Math.max(targetZoom+scrollAmount/zoomFactor,0);
+                    setTarget(targetCenter, newZoom);
+                    scrollTimeout = -1;
+                    scrollAmount = 0;
+                }, 200);
+            }
+            endScrollTimeout = setTimeout(function() {
+                if (targetZoom <1) {
+                    setTarget(initCenter, 1);
+                    endScrollTimeout = -1;
+                }
+            }, 250);
         });
 
         // handling of space key
@@ -85,6 +100,19 @@ function DeclickMap() {
                  paper.view.zoom = 1;*/
             }
         };
+        
+        var dragStartPoint;
+        
+        paper.view.onMouseDown = function(e){
+            dragStartPoint = e.point;
+        };
+        
+        paper.view.onMouseDrag = function(e){
+            var delta = e.point.subtract(dragStartPoint);
+            targetCenter = paper.view.center.subtract(delta);
+            movementSpeed = 500;
+            target = true;
+        };
 
         // Map animation
         paper.view.onFrame = function(event) {
@@ -95,31 +123,32 @@ function DeclickMap() {
                 target = false;
                 if (!center.equals(targetCenter)) {
                     step = event.delta*movementSpeed;
-                    target = true;
                     vector = targetCenter.subtract(center);
                     if (vector.length > step) {
                         step = vector.normalize(step);
                         view.center = center.add(step);
+                        target = true;
                     } else {
                         view.center = new paper.Point(targetCenter);
                     }
                 }
                 if (view.zoom !== targetZoom) {
                     var stepZoom = event.delta*zoomSpeed;
-                    target = true;
                     if (view.zoom < targetZoom) {
                         view.zoom = Math.min(view.zoom + stepZoom, targetZoom);
+                        target = true;
                     } else {
                         view.zoom = Math.max(view.zoom - stepZoom, targetZoom);
                     }
+                    checkLabelsVisibility();
                 }
                 if (!current.position.equals(targetCurrent)) {
                     step = event.delta*movementSpeed;
-                    target = true;
                     vector = targetCurrent.subtract(current.position);
                     if (vector.length > step) {
                         step = vector.normalize(step);
                         current.position = current.position.add(step);
+                        target = true;
                     } else {
                         current.position = targetCurrent;
                     }
@@ -127,6 +156,25 @@ function DeclickMap() {
             }
         };
     };
+    
+    var checkLabelsVisibility = function() {
+        // check if texts have to be displayed or hidden
+        if (labelsVisible) {
+            if (paper.view.zoom <zoomDisplayLabels) {
+                for (var i = 0; i<chapterLabels.length; i++) {
+                    chapterLabels[i].visible = false;
+                }
+                labelsVisible = false;
+            }
+        } else {
+            if (paper.view.zoom >zoomDisplayLabels) {
+                for (var i = 0; i<chapterLabels.length; i++) {
+                    chapterLabels[i].visible = true;
+                }
+                labelsVisible = true;
+            }
+        }
+    }
 
     var initSymbols = function(currentSVG, callback) {
         pChapter = new paper.Path.Circle(new paper.Point(0, 0), 12);
@@ -273,10 +321,6 @@ function DeclickMap() {
     };
 
     var closeChapter = function() {
-        if (currentChapterPath) {
-            currentChapterPath.visible = false;
-            currentChapterLabels.visible = false;
-        }
         setTarget(initCenter, 1);
         $canvas.css("cursor", "default");
         currentChapterPath = null;
@@ -287,15 +331,8 @@ function DeclickMap() {
         if (typeof animate === 'undefined') {
             animate = false;
         }
-        if (currentChapterPath) {
-            currentChapterPath.visible = false;
-            currentChapterLabels.visible = false;
-        }
         if (index < chapterPaths.length) {
             currentChapterPath = chapterPaths[index];
-            currentChapterPath.visible = true;
-            currentChapterLabels = chapterLabels[index];
-            currentChapterLabels.visible = true;
             var bounds = currentChapterPath.bounds;
             bounds = bounds.expand(2*margin);
             var zHeight = paper.view.bounds.height / (bounds.height);
@@ -307,6 +344,7 @@ function DeclickMap() {
                 targetCenter = new paper.Point(paper.view.center);
                 paper.view.zoom = paper.view.zoom * Math.min(zHeight, zWidth);
                 targetZoom = paper.view.zoom;
+                checkLabelsVisibility();
             }
             $canvas.css("cursor", "pointer");
             chapterOpen = true;
@@ -720,4 +758,6 @@ function DeclickMap() {
     this.removeSteps = function() {
         removeSteps();
     };
+    
+    
 }
