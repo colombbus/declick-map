@@ -20,7 +20,7 @@ function DeclickMap() {
     var chapterOpen = false;
     var movementSpeed, zoomSpeed;
     var movementSpeedFast = 500;
-    var zoomSpeedFast = 1;
+    var zoomSpeedFast = 50;
 
     // margin around the path
     var margin = 40;
@@ -79,11 +79,11 @@ function DeclickMap() {
                 } else {
                     newZoom = Math.min(newZoom, maxZoom);
                 }
-                setTarget(scrollCenter, newZoom);
+                setTarget(scrollCenter, newZoom, true);
                 scrollAmount = 0;
                 scrollTimeout = setTimeout(function() {
                     var newZoom = Math.max(targetZoom+scrollAmount/zoomFactor,0);
-                    setTarget(scrollCenter, newZoom);
+                    setTarget(scrollCenter, newZoom, true);
                     scrollTimeout = -1;
                     scrollAmount = 0;
                 }, 200);
@@ -363,12 +363,11 @@ function DeclickMap() {
     var setTarget = function(center, zoom, fast) {
         targetCenter = new paper.Point(center);
         targetZoom = zoom;
+        movementSpeed = (paper.view.center.getDistance(targetCenter))/animationDuration;
+        zoomSpeed = Math.abs(zoom - paper.view.zoom)/animationDuration;
         if (typeof fast !== 'undefined' && fast) {
-            movementSpeed = movementSpeedFast;
-            zoomSpeed = zoomSpeedFast;
-        } else {
-            movementSpeed = (paper.view.center.getDistance(targetCenter))/animationDuration;
-            zoomSpeed = Math.abs(zoom - paper.view.zoom)/animationDuration;
+            movementSpeed = movementSpeed*2;
+            zoomSpeed = zoomSpeed*2;
         }
         target = true;
     };
