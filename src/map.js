@@ -19,6 +19,8 @@ function DeclickMap() {
     var currentIndex = -1;
     var chapterOpen = false;
     var movementSpeed, zoomSpeed;
+    var movementSpeedFast = 500;
+    var zoomSpeedFast = 1;
 
     // margin around the path
     var margin = 40;
@@ -29,6 +31,7 @@ function DeclickMap() {
     
     var zoomDisplayLabels = 1.5;
     var maxZoom = 3;
+    var minZoom = 0.8;
     
     var labelsVisible = false;
 
@@ -58,36 +61,39 @@ function DeclickMap() {
         var scrollTimeout = -1;
         var endScrollTimeout = -1;
         var scrollAmount = 0;
+        var scrollCenter = false;
         
         $canvas.mousewheel(function(event) {
             event.preventDefault();
+            if (scrollCenter === false) {
+                scrollCenter = paper.view.getEventPoint(event);
+            }
             if (endScrollTimeout !== -1) {
                 clearTimeout(endScrollTimeout);
             }
             scrollAmount = event.deltaY*event.deltaFactor;
-            
             if (scrollTimeout === -1) {
                 var newZoom = targetZoom+scrollAmount/zoomFactor;
-                if (newZoom <0 ) {
-                    newZoom = 0;
+                if (scrollAmount <0 ) {
+                    newZoom = Math.max(newZoom, minZoom);
                 } else {
                     newZoom = Math.min(newZoom, maxZoom);
                 }
-                var newCenter = paper.view.getEventPoint(event);
-                setTarget(newCenter, newZoom);
+                setTarget(scrollCenter, newZoom);
                 scrollAmount = 0;
                 scrollTimeout = setTimeout(function() {
                     var newZoom = Math.max(targetZoom+scrollAmount/zoomFactor,0);
-                    setTarget(targetCenter, newZoom);
+                    setTarget(scrollCenter, newZoom);
                     scrollTimeout = -1;
                     scrollAmount = 0;
                 }, 200);
             }
             endScrollTimeout = setTimeout(function() {
                 if (targetZoom <1) {
-                    setTarget(initCenter, 1);
+                    setTarget(initCenter, 1, true);
                     endScrollTimeout = -1;
                 }
+                scrollCenter = false;
             }, 250);
         });
 
@@ -95,9 +101,7 @@ function DeclickMap() {
         var tool = new paper.Tool();
         tool.onKeyDown = function(event) {
             if (event.key === 'space') {
-                closeChapter();
-                /*paper.view.center = initCenter;
-                 paper.view.zoom = 1;*/
+                setTarget(initCenter, 1);
             }
         };
         
@@ -109,9 +113,11 @@ function DeclickMap() {
         
         paper.view.onMouseDrag = function(e){
             var delta = e.point.subtract(dragStartPoint);
-            targetCenter = paper.view.center.subtract(delta);
+            /*targetCenter = paper.view.center.subtract(delta);
             movementSpeed = 500;
-            target = true;
+            target = true;*/
+            paper.view.center = paper.view.center.subtract(delta);
+            targetCenter = paper.view.center;
         };
 
         // Map animation
@@ -354,11 +360,16 @@ function DeclickMap() {
         }
     };
 
-    var setTarget = function(center, zoom) {
+    var setTarget = function(center, zoom, fast) {
         targetCenter = new paper.Point(center);
         targetZoom = zoom;
-        movementSpeed = (paper.view.center.getDistance(targetCenter))/animationDuration;
-        zoomSpeed = Math.abs(zoom - paper.view.zoom)/animationDuration;
+        if (typeof fast !== 'undefined' && fast) {
+            movementSpeed = movementSpeedFast;
+            zoomSpeed = zoomSpeedFast;
+        } else {
+            movementSpeed = (paper.view.center.getDistance(targetCenter))/animationDuration;
+            zoomSpeed = Math.abs(zoom - paper.view.zoom)/animationDuration;
+        }
         target = true;
     };
 
