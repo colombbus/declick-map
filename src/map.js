@@ -11,7 +11,7 @@ function DeclickMap() {
     var currentChapterPath, currentChapterLabels;
     var chapterPaths = [];
     var chapterLabels = [];
-    var targetZoom, targetCenter, targetCurrent, target = false;
+    var targetZoom, targetCenter, targetCurrent, target = false, moveCurrent = false;
     var clickCaptured = false;
     var displayedSteps = [];
     var labels = [];
@@ -113,9 +113,6 @@ function DeclickMap() {
         
         paper.view.onMouseDrag = function(e){
             var delta = e.point.subtract(dragStartPoint);
-            /*targetCenter = paper.view.center.subtract(delta);
-            movementSpeed = 500;
-            target = true;*/
             paper.view.center = paper.view.center.subtract(delta);
             targetCenter = paper.view.center;
         };
@@ -148,16 +145,16 @@ function DeclickMap() {
                     }
                     checkLabelsVisibility();
                 }
-                if (!current.position.equals(targetCurrent)) {
-                    step = event.delta*movementSpeed;
-                    vector = targetCurrent.subtract(current.position);
-                    if (vector.length > step) {
-                        step = vector.normalize(step);
-                        current.position = current.position.add(step);
-                        target = true;
-                    } else {
-                        current.position = targetCurrent;
-                    }
+            }
+            if (moveCurrent&&!current.position.equals(targetCurrent)) {
+                step = event.delta*movementSpeed;
+                vector = targetCurrent.subtract(current.position);
+                if (vector.length > step) {
+                    step = vector.normalize(step);
+                    current.position = current.position.add(step);
+                } else {
+                    current.position = targetCurrent;
+                    moveCurrent = false;
                 }
             }
         };
@@ -475,6 +472,9 @@ function DeclickMap() {
         var previousChapter = false;
         var previousLabel;
         var currentLabels;
+        if (!path) {
+            return;
+        }
         var basePath = path.clone();
 
         var placeSymbol = function(index, curve, length, last) {
@@ -714,7 +714,7 @@ function DeclickMap() {
             var step = displayedSteps[stepIndex];
             if (animate) {
                 targetCurrent = step.position;
-                target = true;
+                moveCurrent = true;
             } else {
                 current.position = step.position;
                 targetCurrent = current.position;
