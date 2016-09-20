@@ -23,6 +23,7 @@ function DeclickMap() {
     var sStep, sStepValidated, sStepVisited;
     var displayedSteps = [];
     var stepCallback;
+    var stepsDisplayed = false;
 
     // current step
     var current;
@@ -88,6 +89,9 @@ function DeclickMap() {
         // view resizing
         paper.view.onResize = function(event) {
             reset();
+            if (stepsDisplayed) {
+                    resize();
+            }
         };
 
         // zooming with scroll
@@ -426,6 +430,8 @@ function DeclickMap() {
         changeZoom = false;
         changeCurrent = false;
         labelsVisible = false;
+        stepsDisplayed = true;
+		
         if (initCenter) {
             paper.view.center = new paper.Point(initCenter);
             targetCenter = new paper.Point(initCenter);
@@ -618,6 +624,7 @@ function DeclickMap() {
         };
 
         everything.addChild(current);
+	stepsDisplayed = true;
     };
 
     // Mouse handlers
@@ -755,15 +762,11 @@ function DeclickMap() {
 
     // load steps
     this.loadSteps = function(data) {
+        if (stepsDisplayed) {
+                removeSteps();
+        }
         initSteps(data);
         displaySteps();
-        // view resizing
-        paper.view.onResize = function(event) {
-            initCenter = new paper.Point(paper.view.center);
-            targetCenter = new paper.Point(initCenter);
-            targetZoom = 1;
-            resize();
-        };
         paper.view.draw();
     };
 
